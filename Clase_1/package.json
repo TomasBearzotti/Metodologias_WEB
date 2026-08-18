@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-"scripts": {
+  "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "rimraf dist && tsc",
     "start": "node dist/server.js"
@@ -14,7 +14,8 @@
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongodb": "^7.5.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
