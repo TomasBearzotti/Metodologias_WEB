@@ -1,0 +1,15 @@
+info:
+  name: deleteStudent
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: http://localhost:3000/api/students/6a84736443585059c37a4f35
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

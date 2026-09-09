@@ -1,0 +1,15 @@
+info:
+  name: deleteTeam
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: http://localhost:3000/api/teams/6a847b695fc23631dd12b779
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

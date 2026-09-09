@@ -1,0 +1,30 @@
+info:
+  name: createTeam
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:3000/api/teams
+  body:
+    type: json
+    data: "{\r
+
+      \  \"name\": \"Los Pibes del Barrio\",\r
+
+      \  \"sport\": \"Fútbol\",\r
+
+      \  \"category\": \"Primera A\",\r
+
+      \  \"foundationYear\": 2015,\r
+
+      \  \"active\": true\r
+
+      }"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

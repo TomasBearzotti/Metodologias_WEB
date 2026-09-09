@@ -1,0 +1,34 @@
+info:
+  name: listStudents
+  type: http
+  seq: 1
+
+http:
+  method: QUERY
+  url: http://localhost:3000/api/students
+  body:
+    type: json
+    data: "{\r
+
+      \  \"career\": \"Sistemas\",\r
+
+      \  \"active\": true,\r
+
+      \  \"search\": \"Tom\",\r
+
+      \  \"page\": 1,\r
+
+      \  \"limit\": 10,\r
+
+      \  \"sortBy\": \"createdAt\",\r
+
+      \  \"sortOrder\": \"asc\"\r
+
+      }"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
