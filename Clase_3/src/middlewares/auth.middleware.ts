@@ -1,7 +1,7 @@
 // Protege rutas: exige un accessToken valido en cookies; si expiro, intenta renovarlo con el refreshToken.
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { JwtAccessPayload, JwtRefreshPayload } from "../types/auth.types";
+import { JwtAccessPayload, JwtRefreshPayload, UserRole } from "../types/auth.types";
 
 function getAccessSecret(): string {
   const secret = process.env.JWT_SECRET;
@@ -31,6 +31,23 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
   } catch (error) {
     renewFromRefreshToken(req, res, next);
   }
+}
+
+// requireRole: siempre se usa DESPUES de authMiddleware, asume que req.userRole ya esta seteado.
+export function requireRole(...rolesPermitidos: UserRole[]) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (!req.userRole) {
+      res.status(401).json({ success: false, error: { message: "Sesion requerida" } });
+      return;
+    }
+
+    if (!rolesPermitidos.includes(req.userRole)) {
+      res.status(403).json({ success: false, error: { message: "No tenes permisos para realizar esta accion" } });
+      return;
+    }
+
+    next();
+  };
 }
 
 function renewFromRefreshToken(req: Request, res: Response, next: NextFunction): void {
