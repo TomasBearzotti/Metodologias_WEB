@@ -1,7 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./auth";
 import { RequireAuth, RequireRole } from "./guards";
-import { AdminDashboardPage, DashboardPage, HomePage, LoginPage } from "./pages";
+import { AdminDashboardPage, DashboardPage, HomePage, LoginPage, RegisterPage } from "./pages";
+import "./styles.css";
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route element={<RequireAuth />}>
             <Route path="/dashboard" element={<DashboardPage />} />
           </Route>

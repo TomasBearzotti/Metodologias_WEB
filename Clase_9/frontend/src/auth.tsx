@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { User } from "./types";
+import type { User, UserRole } from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
@@ -7,6 +7,7 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -44,12 +45,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(loggedInUser);
   }
 
+  async function register(name: string, email: string, password: string, role: UserRole): Promise<void> {
+    await request("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ name, email, password, role }),
+    });
+    await login(email, password);
+  }
+
   async function logout(): Promise<void> {
     await request("/api/auth/logout", { method: "POST" });
     setUser(null);
   }
 
-  return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, loading, login, register, logout }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextValue {

@@ -23,6 +23,7 @@ variables de `backend/.env` tomando como referencia `backend/.env.example`.
 Además de las rutas existentes, la autenticación expone:
 
 - `POST /api/auth/login`
+- `POST /api/auth/register` (acepta `name`, `email`, `password` y `role`)
 - `POST /api/auth/logout`
 - `GET /api/auth/me` (requiere una sesión válida)
 
@@ -57,8 +58,13 @@ VITE_API_URL=http://localhost:3000
 
 - `/`: ruta pública de inicio. Consulta la sesión y redirige al dashboard correspondiente.
 - `/login`: inicio de sesión público.
+- `/register`: registro público con selector de rol para probar la actividad.
 - `/dashboard`: ruta privada para cualquier usuario autenticado.
 - `/dashboard-admin`: ruta privada disponible únicamente para usuarios con rol `ADMIN`.
+
+El selector `ADMIN` del registro se deja únicamente para facilitar la demostración
+de roles solicitada en clase. En una aplicación real, ese rol debería asignarse
+desde un panel administrativo o desde el backend.
 
 Las solicitudes incluyen credenciales para que el backend gestione las cookies de
 sesión. Las cookies son `httpOnly`, por lo que el frontend conoce la sesión mediante

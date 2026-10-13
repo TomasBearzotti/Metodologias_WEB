@@ -9,6 +9,7 @@ export const registerSchema = z.object({
     .max(80, "El nombre no puede superar los 80 caracteres"),
   email: z.string().trim().toLowerCase().email("El email no tiene un formato valido"),
   password: z.string().min(6, "La contrasena debe tener al menos 6 caracteres"),
+  role: z.enum(["USER", "ADMIN"]).default("USER"),
 });
 
 export const loginSchema = z.object({
