@@ -1,0 +1,30 @@
+info:
+  name: createStudent
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:3000/api/students
+  body:
+    type: json
+    data: "{\r
+
+      \  \"firstName\": \"Tomás\",\r
+
+      \  \"lastName\": \"Bearzotti\",\r
+
+      \  \"email\": \"tomas@ejemplo.com\",\r
+
+      \  \"career\": \"Sistemas\",\r
+
+      \  \"active\": true\r
+
+      }"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

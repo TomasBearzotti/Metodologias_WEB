@@ -1,0 +1,103 @@
+// Protege rutas: exige un accessToken valido en cookies; si expiro, intenta renovarlo con el refreshToken.
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { JwtAccessPayload, UserRole } from "../types/auth.types";
+
+function isUserRole(value: unknown): value is UserRole {
+  return value === "ADMIN" || value === "USER";
+}
+
+function isAccessPayload(value: string | jwt.JwtPayload): value is JwtAccessPayload {
+  return typeof value !== "string"
+    && typeof value.userId === "string"
+    && isUserRole(value.role);
+}
+
+function getAccessSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("Missing JWT_SECRET environment variable");
+  return secret;
+}
+
+function getRefreshSecret(): string {
+  const secret = process.env.JWT_REFRESH_SECRET;
+  if (!secret) throw new Error("Missing JWT_REFRESH_SECRET environment variable");
+  return secret;
+}
+
+export function authMiddleware(req: Request, res: Response, next: NextFunction): void {
+  const accessToken = req.cookies?.accessToken;
+
+  if (!accessToken) {
+    renewFromRefreshToken(req, res, next);
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(accessToken, getAccessSecret());
+    if (!isAccessPayload(decoded)) {
+      renewFromRefreshToken(req, res, next);
+      return;
+    }
+    req.userId = decoded.userId;
+    req.userRole = decoded.role;
+    next();
+  } catch (error) {
+    renewFromRefreshToken(req, res, next);
+  }
+}
+
+// requireRole: siempre se usa DESPUES de authMiddleware, asume que req.userRole ya esta seteado.
+export function requireRole(...rolesPermitidos: UserRole[]) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (!req.userRole) {
+      res.status(401).json({ success: false, error: { message: "Sesion requerida" } });
+      return;
+    }
+
+    if (!rolesPermitidos.includes(req.userRole)) {
+      res.status(403).json({ success: false, error: { message: "No tenes permisos para realizar esta accion" } });
+      return;
+    }
+
+    next();
+  };
+}
+
+function renewFromRefreshToken(req: Request, res: Response, next: NextFunction): void {
+  const refreshToken = req.cookies?.refreshToken;
+
+  if (!refreshToken) {
+    res.status(401).json({ success: false, error: { message: "Sesion requerida" } });
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, getRefreshSecret());
+    if (
+      typeof decoded === "string"
+      || typeof decoded.userId !== "string"
+      || !isUserRole(decoded.role)
+    ) {
+      res.status(401).json({ success: false, error: { message: "Sesion invalida o expirada" } });
+      return;
+    }
+
+    const newAccessToken = jwt.sign({ userId: decoded.userId, role: decoded.role }, getAccessSecret(), {
+      expiresIn: process.env.JWT_EXPIRES_IN ?? "15m",
+    } as jwt.SignOptions);
+
+    res.cookie("accessToken", newAccessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    req.userId = decoded.userId;
+    req.userRole = decoded.role;
+    next();
+  } catch (error) {
+    res.status(401).json({ success: false, error: { message: "Sesion invalida o expirada" } });
+  }
+}

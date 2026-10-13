@@ -1,0 +1,24 @@
+info:
+  name: logoutUsuario
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:3000/api/auth/logout
+  body:
+    type: text
+    data: "{\r
+
+      \  \"email\": \"tomi@mail.com\",\r
+
+      \  \"password\": \"123456\"\r
+
+      }"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
