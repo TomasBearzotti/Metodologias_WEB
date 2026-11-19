@@ -1,0 +1,226 @@
+openapi: 3.0.3
+info:
+  title: Movie Reviews & Ownership API
+  description: Endpoints para gestión de reseñas, control de autoría y consulta de registros propios.
+  version: 1.0.0
+paths:
+  /api/v1/movies/{id}/reviews:
+    post:
+      summary: Crear una nueva reseña en una película
+      description: Permite a cualquier usuario autenticado calificar (1 a 5) y opinar sobre una película. Un usuario solo puede publicar una reseña por película.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la película en MongoDB (ObjectId de 24 caracteres)
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReviewInput'
+      responses:
+        '201':
+          description: Reseña creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewResponse'
+        '400':
+          description: Error de validación Zod o el usuario ya opinó en esta película
+        '401':
+          description: Usuario no autenticado
+        '404':
+          description: Película no encontrada
+
+  /api/v1/movies/{id}/reviews/{reviewId}:
+    put:
+      summary: Editar una reseña existente
+      description: Permite únicamente al autor original de la reseña modificar su calificación y comentario.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la película
+          schema:
+            type: string
+        - name: reviewId
+          in: path
+          required: true
+          description: ID del subdocumento de la reseña
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReviewInput'
+      responses:
+        '200':
+          description: Reseña actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewResponse'
+        '400':
+          description: Error de validación Zod
+        '401':
+          description: Usuario no autenticado
+        '403':
+          description: Prohibido - el usuario no es el autor de la reseña
+        '404':
+          description: Película o reseña no encontrada
+
+    delete:
+      summary: Eliminar una reseña
+      description: Permite al autor original de la reseña O a cualquier administrador eliminar la reseña.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la película
+          schema:
+            type: string
+        - name: reviewId
+          in: path
+          required: true
+          description: ID del subdocumento de la reseña
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Reseña eliminada exitosamente
+        '401':
+          description: Usuario no autenticado
+        '403':
+          description: Prohibido - el usuario no es el autor ni posee rol admin
+        '404':
+          description: Película o reseña no encontrada
+
+  /api/v1/reviews/me:
+    get:
+      summary: Obtener todas las reseñas creadas por el usuario autenticado
+      description: Retorna un listado plano de las reseñas redactadas por el usuario actual, enriquecidas con título, ID y póster de la película.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Lista de reseñas propias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserReviewItem'
+        '401':
+          description: Usuario no autenticado
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: better-auth.session_token
+
+  schemas:
+    CreateReviewInput:
+      type: object
+      required:
+        - rating
+        - comment
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 5
+        comment:
+          type: string
+          minLength: 3
+          maxLength: 500
+          example: "Una obra maestra del cine contemporáneo."
+
+    UpdateReviewInput:
+      type: object
+      required:
+        - rating
+        - comment
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 4
+        comment:
+          type: string
+          minLength: 3
+          maxLength: 500
+          example: "Revisando mi opinión, sigue siendo excelente pero con detalles."
+
+    ReviewResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "654c1234567890abcdef1234"
+        userId:
+          type: string
+          example: "usr_abc123"
+        userName:
+          type: string
+          example: "Juan Pérez"
+        rating:
+          type: integer
+          example: 5
+        comment:
+          type: string
+          example: "Una obra maestra del cine contemporáneo."
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserReviewItem:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "654c1234567890abcdef1234"
+        movieId:
+          type: string
+          example: "654b00000000000000000001"
+        movieTitle:
+          type: string
+          example: "Inception"
+        posterUrl:
+          type: string
+          example: "https://image.tmdb.org/t/p/w500/edv5CZvWj09upOsy2Y6IwDhK8bt.jpg"
+        genre:
+          type: string
+          example: "Ciencia Ficción"
+        year:
+          type: integer
+          example: 2010
+        rating:
+          type: integer
+          example: 5
+        comment:
+          type: string
+          example: "Excelente guion y efectos visuales."
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
