@@ -101,8 +101,8 @@ description: "Task list for Movie Catalog Core (Fase 1) implementation"
 
 **Prueba Independiente**: Ingresar a `/admin/sesiones` con usuario admin, ver el listado de usuarios, promover un usuario común a `admin`, verificar el cambio en MongoDB, y revocar una sesión secundaria.
 
-- [ ] T029 [US4] Extender la página `Sessions.tsx` en `frontend/src/pages/Sessions.tsx` agregando control/botón para alternar el rol de los usuarios entre `user` y `admin` mediante `authClient.admin.setRole({ userId, role })` y mostrando notificación del cambio
-- [ ] T030 [US4] Asegurar el montaje de la ruta `/admin/sesiones` en `frontend/src/router/index.tsx` bajo la guarda de rol `admin` y añadir enlace de navegación en `frontend/src/layouts/Layout.tsx`
+- [X] T029 [US4] Extender la página `Sessions.tsx` en `frontend/src/pages/Sessions.tsx` agregando control/botón para alternar el rol de los usuarios entre `user` y `admin` mediante `authClient.admin.setRole({ userId, role })` y mostrando notificación del cambio
+- [X] T030 [US4] Asegurar el montaje de la ruta `/admin/sesiones` en `frontend/src/router/index.tsx` bajo la guarda de rol `admin` y añadir enlace de navegación en `frontend/src/layouts/Layout.tsx`
 
 **Checkpoint**: Control de usuarios, roles y sesiones plenamente operativo.
 
@@ -112,10 +112,10 @@ description: "Task list for Movie Catalog Core (Fase 1) implementation"
 
 **Propósito**: Compilación limpia, linting, documentación completa para entrega y verificación integral.
 
-- [ ] T031 [P] Ejecutar compilación de TypeScript en backend (`npm run build` en `backend/`) y en frontend (`npm run build` en `frontend/`) verificando 0 errores de tipado
-- [ ] T032 [P] Ejecutar linter en frontend (`npx oxlint` en `frontend/`) asegurando ausencia de advertencias o errores de sintaxis
-- [ ] T033 [P] Documentar el proyecto en `README.md` con descripción general de la aplicación de películas, tabla completa de endpoints de la API con sus roles y métodos, credenciales de los usuarios de prueba (`admin` y `user`), instrucciones de ejecución local y guía de despliegue en Render (Web Service y Static Site con rewrites)
-- [ ] T034 Ejecutar validación final end-to-end siguiendo los 4 escenarios de `specs/001-movie-catalog-core/quickstart.md` (catálogo público, restricción 403 para usuarios normales, ABM por admin con Zod y persistencia de sesión)
+- [X] T031 [P] Ejecutar compilación de TypeScript en backend (`npm run build` en `backend/`) y en frontend (`npm run build` en `frontend/`) verificando 0 errores de tipado
+- [X] T032 [P] Ejecutar linter en frontend (`npx oxlint` en `frontend/`) asegurando ausencia de advertencias o errores de sintaxis
+- [X] T033 [P] Documentar el proyecto en `README.md` con descripción general de la aplicación de películas, tabla completa de endpoints de la API con sus roles y métodos, credenciales de los usuarios de prueba (`admin` y `user`), instrucciones de ejecución local y guía de despliegue en Render (Web Service y Static Site con rewrites)
+- [X] T034 Ejecutar validación final end-to-end siguiendo los 4 escenarios de `specs/001-movie-catalog-core/quickstart.md` (catálogo público, restricción 403 para usuarios normales, ABM por admin con Zod y persistencia de sesión)
 
 ---
 

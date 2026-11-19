@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Movie } from "../../types/movie";
 import {
@@ -23,14 +23,14 @@ export const MovieForm = ({ movie, onSave, onCancel }: MovieFormProps) => {
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<MovieFormValues>({
     resolver: zodResolver(movieFormSchema),
     defaultValues: defaultMovieFormValues,
   });
 
-  const posterPreview = watch("posterUrl");
+  const posterPreview = useWatch({ control, name: "posterUrl" });
 
   useEffect(() => {
     if (movie) {
