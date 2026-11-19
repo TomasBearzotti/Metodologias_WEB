@@ -39,6 +39,19 @@ export const Layout = () => {
               Catálogo
             </NavLink>
 
+            {user && (
+              <NavLink
+                to="/mis-reseñas"
+                className={({ isActive }) =>
+                  `transition hover:text-indigo-400 ${
+                    isActive ? "text-indigo-400 font-semibold" : "text-slate-300"
+                  }`
+                }
+              >
+                Mis Reseñas
+              </NavLink>
+            )}
+
             {isAdmin && (
               <>
                 <NavLink

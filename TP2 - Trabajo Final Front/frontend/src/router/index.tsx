@@ -6,6 +6,7 @@ import { MovieDetail } from "../pages/MovieDetail";
 import { Login } from "../pages/Login";
 import { Register } from "../pages/Register";
 import { Profile } from "../pages/Profile";
+import { MyReviews } from "../pages/MyReviews";
 import { Admin } from "../pages/Admin";
 import { Sessions } from "../pages/Sessions";
 import { NotFound } from "../pages/NotFound";
@@ -27,7 +28,10 @@ export const router = createBrowserRouter([
       // Rutas privadas para cualquier usuario autenticado
       {
         element: <ProtectedRoute />,
-        children: [{ path: "perfil", element: <Profile /> }],
+        children: [
+          { path: "perfil", element: <Profile /> },
+          { path: "mis-reseñas", element: <MyReviews /> },
+        ],
       },
 
       // Rutas exclusivas para rol admin
@@ -39,6 +43,7 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <Admin /> },
               { path: "sesiones", element: <Sessions /> },
+              { path: "usuarios", element: <Sessions /> },
             ],
           },
         ],

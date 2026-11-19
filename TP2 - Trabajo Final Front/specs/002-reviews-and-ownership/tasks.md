@@ -64,14 +64,14 @@ description: "Task list for Reviews, Ownership & Google Auth (Fase 2) implementa
 
 **Prueba Independiente**: Iniciar sesión como Usuario A y crear una reseña. Iniciar sesión como Usuario B e intentar editarla o borrarla (verificar 403 Forbidden). Iniciar sesión como admin y borrarla (status 204). Ingresar a `/mis-reseñas` con Usuario A y verificar que ve solo sus propias opiniones con opciones de editar y eliminar.
 
-- [ ] T014 [P] [US2] Implementar controladores `updateReview` (status 200, ownership estricto `review.userId === req.user.id` o 403 Forbidden) y `deleteReview` (status 204, permitido solo si `review.userId === req.user.id || req.user.role === "admin"`, 403 si no) en `backend/src/controllers/reviews.controller.ts`
-- [ ] T015 [US2] Agregar rutas `PUT /:id/reviews/:reviewId` con `validateBody(updateReviewSchema)` y `DELETE /:id/reviews/:reviewId` en `backend/src/routes/movies.routes.ts` protegidas por `authMiddleware`
-- [ ] T016 [P] [US2] Implementar controlador `getMyReviews` en `backend/src/controllers/reviews.controller.ts` utilizando agregación MongoDB (`$unwind` sobre `reviews` filtrando por `reviews.userId === req.user.id`) devolviendo status 200 con la lista de reseñas propias y metadata de película
-- [ ] T017 [US2] Crear router `backend/src/routes/reviews.routes.ts` exponiendo `GET /me` con `authMiddleware` y montarlo en `backend/src/routes/index.ts` bajo `/reviews`
-- [ ] T018 [P] [US2] Agregar mutaciones `updateReview`, `deleteReview` y query `getMyReviews` en `frontend/src/store/api.ts` proveyendo e invalidando tags `Movies` y `MyReviews`
-- [ ] T019 [P] [US2] Extender `frontend/src/components/reviews/ReviewList.tsx` para mostrar botones de editar y eliminar condicionalmente (editar solo si `review.userId === currentUserId`, eliminar si es autor o `isAdmin`)
-- [ ] T020 [P] [US2] Crear página `MyReviews.tsx` en `frontend/src/pages/MyReviews.tsx` consumiendo `useGetMyReviewsQuery`, mostrando tarjetas con póster, título, puntaje, comentario y modal/panel para editar o eliminar con confirmación
-- [ ] T021 [US2] Registrar ruta protegida `/mis-reseñas` en `frontend/src/router/index.tsx` y agregar enlace de navegación "Mis Reseñas" en `frontend/src/layouts/Layout.tsx` visible para usuarios autenticados
+- [X] T014 [P] [US2] Implementar controladores `updateReview` (status 200, ownership estricto `review.userId === req.user.id` o 403 Forbidden) y `deleteReview` (status 204, permitido solo si `review.userId === req.user.id || req.user.role === "admin"`, 403 si no) en `backend/src/controllers/reviews.controller.ts`
+- [X] T015 [US2] Agregar rutas `PUT /:id/reviews/:reviewId` con `validateBody(updateReviewSchema)` y `DELETE /:id/reviews/:reviewId` en `backend/src/routes/movies.routes.ts` protegidas por `authMiddleware`
+- [X] T016 [P] [US2] Implementar controlador `getMyReviews` en `backend/src/controllers/reviews.controller.ts` utilizando agregación MongoDB (`$unwind` sobre `reviews` filtrando por `reviews.userId === req.user.id`) devolviendo status 200 con la lista de reseñas propias y metadata de película
+- [X] T017 [US2] Crear router `backend/src/routes/reviews.routes.ts` exponiendo `GET /me` con `authMiddleware` y montarlo en `backend/src/routes/index.ts` bajo `/reviews`
+- [X] T018 [P] [US2] Agregar mutaciones `updateReview`, `deleteReview` y query `getMyReviews` en `frontend/src/store/api.ts` proveyendo e invalidando tags `Movies` y `MyReviews`
+- [X] T019 [P] [US2] Extender `frontend/src/components/reviews/ReviewList.tsx` para mostrar botones de editar y eliminar condicionalmente (editar solo si `review.userId === currentUserId`, eliminar si es autor o `isAdmin`)
+- [X] T020 [P] [US2] Crear página `MyReviews.tsx` en `frontend/src/pages/MyReviews.tsx` consumiendo `useGetMyReviewsQuery`, mostrando tarjetas con póster, título, puntaje, comentario y modal/panel para editar o eliminar con confirmación
+- [X] T021 [US2] Registrar ruta protegida `/mis-reseñas` en `frontend/src/router/index.tsx` y agregar enlace de navegación "Mis Reseñas" en `frontend/src/layouts/Layout.tsx` visible para usuarios autenticados
 
 **Checkpoint**: Control de autoría (Ownership) y vista privada de gestión personal plenamente funcionales.
 
