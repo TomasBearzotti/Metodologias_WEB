@@ -46,13 +46,13 @@ description: "Task list for Reviews, Ownership & Google Auth (Fase 2) implementa
 
 **Prueba Independiente**: Abrir una película en `/movies/:id`, enviar una reseña válida con un usuario autenticado, verificar que se guarda en MongoDB (`POST /api/v1/movies/:id/reviews`, status 201), se actualiza el promedio de la película y se rechaza un segundo intento de reseña con 400 Bad Request.
 
-- [ ] T007 [P] [US1] Implementar controlador `createReview` en `backend/src/controllers/reviews.controller.ts` extrayendo `userId` y `userName` exclusivamente de `req.user`, verificando que el usuario no haya opinado previamente en la película (400 si ya existe), insertando el subdocumento y devolviendo status 201
-- [ ] T008 [US1] Montar la ruta `POST /:id/reviews` en `backend/src/routes/movies.routes.ts` protegiéndola con `authMiddleware` y `validateBody(createReviewSchema)`
-- [ ] T009 [P] [US1] Agregar mutación `addReview` en `frontend/src/store/api.ts` con endpoint `POST /movies/:id/reviews` configurando `invalidatesTags: ["Movies"]`
-- [ ] T010 [P] [US1] Crear componente interactivo `StarRating.tsx` en `frontend/src/components/reviews/StarRating.tsx` para selección de 1 a 5 estrellas con modo interactivo y modo solo-lectura
-- [ ] T011 [P] [US1] Crear componente `ReviewForm.tsx` en `frontend/src/components/reviews/ReviewForm.tsx` con React Hook Form, Zod resolver, selector de estrellas y mensaje de error por campo
-- [ ] T012 [P] [US1] Crear componente `ReviewList.tsx` en `frontend/src/components/reviews/ReviewList.tsx` mostrando lista de reseñas con nombre de autor, estrellas, fecha formateada y comentario
-- [ ] T013 [US1] Integrar en `frontend/src/pages/MovieDetail.tsx` el promedio de estrellas, contador de opiniones, renderizado de `ReviewForm` (solo visible si el usuario está autenticado y no ha opinado aún) y `ReviewList`
+- [X] T007 [P] [US1] Implementar controlador `createReview` en `backend/src/controllers/reviews.controller.ts` extrayendo `userId` y `userName` exclusivamente de `req.user`, verificando que el usuario no haya opinado previamente en la película (400 si ya existe), insertando el subdocumento y devolviendo status 201
+- [X] T008 [US1] Montar la ruta `POST /:id/reviews` en `backend/src/routes/movies.routes.ts` protegiéndola con `authMiddleware` y `validateBody(createReviewSchema)`
+- [X] T009 [P] [US1] Agregar mutación `addReview` en `frontend/src/store/api.ts` con endpoint `POST /movies/:id/reviews` configurando `invalidatesTags: ["Movies"]`
+- [X] T010 [P] [US1] Crear componente interactivo `StarRating.tsx` en `frontend/src/components/reviews/StarRating.tsx` para selección de 1 a 5 estrellas con modo interactivo y modo solo-lectura
+- [X] T011 [P] [US1] Crear componente `ReviewForm.tsx` en `frontend/src/components/reviews/ReviewForm.tsx` con React Hook Form, Zod resolver, selector de estrellas y mensaje de error por campo
+- [X] T012 [P] [US1] Crear componente `ReviewList.tsx` en `frontend/src/components/reviews/ReviewList.tsx` mostrando lista de reseñas con nombre de autor, estrellas, fecha formateada y comentario
+- [X] T013 [US1] Integrar en `frontend/src/pages/MovieDetail.tsx` el promedio de estrellas, contador de opiniones, renderizado de `ReviewForm` (solo visible si el usuario está autenticado y no ha opinado aún) y `ReviewList`
 
 **Checkpoint**: MVP de reseñas operativo. Usuarios pueden opinar y consultar calificaciones.
 
