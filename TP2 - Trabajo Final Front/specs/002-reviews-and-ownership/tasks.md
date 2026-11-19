@@ -83,8 +83,8 @@ description: "Task list for Reviews, Ownership & Google Auth (Fase 2) implementa
 
 **Prueba Independiente**: Abrir `/login` y `/register`, verificar botón "Continuar con Google" y corroborar inicio del flujo OAuth vía `authClient.signIn.social({ provider: "google" })`.
 
-- [ ] T022 [P] [US3] Agregar botón estilizado "Continuar con Google" en `frontend/src/pages/Login.tsx` invocando `authClient.signIn.social({ provider: "google", callbackURL: "/" })` con captura amigable de errores
-- [ ] T023 [P] [US3] Agregar botón estilizado "Continuar con Google" en `frontend/src/pages/Register.tsx` invocando `authClient.signIn.social({ provider: "google", callbackURL: "/" })`
+- [X] T022 [P] [US3] Agregar botón estilizado "Continuar con Google" en `frontend/src/pages/Login.tsx` invocando `authClient.signIn.social({ provider: "google", callbackURL: "/" })` con captura amigable de errores
+- [X] T023 [P] [US3] Agregar botón estilizado "Continuar con Google" en `frontend/src/pages/Register.tsx` invocando `authClient.signIn.social({ provider: "google", callbackURL: "/" })`
 
 **Checkpoint**: Autenticación dual (GitHub + Google + email/contraseña) operativa.
 
