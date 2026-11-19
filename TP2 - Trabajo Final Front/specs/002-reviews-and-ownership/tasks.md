@@ -20,8 +20,8 @@ description: "Task list for Reviews, Ownership & Google Auth (Fase 2) implementa
 
 **Propósito**: Preparación de variables de entorno y configuración de Better Auth para el nuevo proveedor social.
 
-- [ ] T001 [P] Actualizar `backend/.env.example` agregando las claves canónicas de Google OAuth (`GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`) sin valores reales
-- [ ] T002 [P] Actualizar `backend/src/lib/auth.ts` configurando el proveedor `google` en `socialProviders` de forma condicional (si las variables existen) y agregando `"google"` en `account.accountLinking.trustedProviders`
+- [x] T001 [P] Actualizar `backend/.env.example` agregando las claves canónicas de Google OAuth (`GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`) sin valores reales
+- [x] T002 [P] Actualizar `backend/src/lib/auth.ts` configurando el proveedor `google` en `socialProviders` de forma condicional (si las variables existen) y agregando `"google"` en `account.accountLinking.trustedProviders`
 
 ---
 
@@ -31,10 +31,10 @@ description: "Task list for Reviews, Ownership & Google Auth (Fase 2) implementa
 
 **⚠️ CRÍTICO**: Ninguna historia de usuario puede comenzar hasta completar esta fase.
 
-- [ ] T003 [P] Actualizar `backend/src/models/Movie.ts` asegurando que la interfaz `IMovieReview` y el esquema `movieReviewSchema` incluyan `updatedAt: Date` y mantengan `_id: true`
-- [ ] T004 [P] Crear esquemas Zod en `backend/src/schemas/review.schema.ts` conteniendo `createReviewSchema` (rating entero 1-5, comment string 3-500) y `updateReviewSchema`
-- [ ] T005 [P] Actualizar tipos en `frontend/src/types/movie.ts` exportando `MovieReview`, `UserReviewItem` y campos calculados de reseñas
-- [ ] T006 [P] Crear esquemas Zod en `frontend/src/schemas/review.schema.ts` conteniendo `reviewFormSchema` y `defaultReviewFormValues`
+- [X] T003 [P] Actualizar `backend/src/models/Movie.ts` asegurando que la interfaz `IMovieReview` y el esquema `movieReviewSchema` incluyan `updatedAt: Date` y mantengan `_id: true`
+- [X] T004 [P] Crear esquemas Zod en `backend/src/schemas/review.schema.ts` conteniendo `createReviewSchema` (rating entero 1-5, comment string 3-500) y `updateReviewSchema`
+- [X] T005 [P] Actualizar tipos en `frontend/src/types/movie.ts` exportando `MovieReview`, `UserReviewItem` y campos calculados de reseñas
+- [X] T006 [P] Crear esquemas Zod en `frontend/src/schemas/review.schema.ts` conteniendo `reviewFormSchema` y `defaultReviewFormValues`
 
 **Checkpoint**: Base de datos, tipos y esquemas listos — las historias de usuario pueden implementarse a continuación.
 

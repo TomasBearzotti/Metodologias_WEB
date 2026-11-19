@@ -1,6 +1,6 @@
 import { Schema, model, Document, Model, Types } from "mongoose";
 
-// Subdocumento Review (Preparado para Fase 2)
+// Subdocumento Review (Fase 2)
 export interface IMovieReview {
   _id?: Types.ObjectId;
   userId: string;
@@ -8,6 +8,7 @@ export interface IMovieReview {
   rating: number; // 1 a 5
   comment: string;
   createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const movieReviewSchema = new Schema<IMovieReview>(
@@ -17,6 +18,7 @@ const movieReviewSchema = new Schema<IMovieReview>(
     rating: { type: Number, required: true, min: 1, max: 5 },
     comment: { type: String, required: true, trim: true },
     createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
   },
   { _id: true }
 );

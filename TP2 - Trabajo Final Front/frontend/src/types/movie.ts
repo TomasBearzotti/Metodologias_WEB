@@ -5,6 +5,20 @@ export interface MovieReview {
   rating: number;
   comment: string;
   createdAt: string;
+  updatedAt?: string;
+}
+
+export interface UserReviewItem {
+  _id: string;
+  movieId: string;
+  movieTitle: string;
+  posterUrl: string;
+  genre: string;
+  year: number;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface Movie {
@@ -18,6 +32,8 @@ export interface Movie {
   isAvailable: boolean;
   releaseDate: string;
   reviews?: MovieReview[];
+  averageRating?: number;
+  reviewsCount?: number;
   createdAt: string;
   updatedAt: string;
 }
