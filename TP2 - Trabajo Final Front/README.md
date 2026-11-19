@@ -7,42 +7,56 @@
 
 ## 📌 Descripción del Proyecto
 
-Aplicación web integral para la gestión y exploración de un catálogo de películas cinematográficas. Implementa autenticación robusta (credenciales y GitHub OAuth), autorización basada en roles (RBAC: `user` y `admin`), formularios validados con esquemas Zod en cliente y servidor, y consumo de APIs mediante arquitectura desacoplada y desplegable en la nube (Render).
+Aplicación web integral para la exploración, calificación comunitaria y gestión de un catálogo de películas cinematográficas. Implementa autenticación múltiple (credenciales locales, GitHub OAuth y Google OAuth), autorización basada en roles (RBAC: `user` y `admin`), control estricto de propiedad sobre registros (Ownership de reseñas), formularios validados con Zod en cliente y servidor, y consumo de APIs desacoplado y desplegable en la nube (Render).
+
+---
+
+## 🎬 Modelo de Datos y Entidades
 
 ### Entidad Principal: `Movie` (Película)
 
-| Campo         | Tipo de Dato    | Requerido          | Descripción                                                              |
-| :------------ | :-------------- | :----------------- | :----------------------------------------------------------------------- |
-| `title`       | `string`        | Sí                 | Título de la película                                                    |
-| `synopsis`    | `string`        | Sí                 | Sinopsis argumental o resumen                                            |
-| `director`    | `string`        | Sí                 | Nombre del director o cineasta                                           |
-| `year`        | `number` (int)  | Sí                 | Año de estreno (rango: 1888 a 2100)                                      |
-| `genre`       | `string` (enum) | Sí                 | Género (`Acción`, `Comedia`, `Drama`, `Ciencia Ficción`, `Terror`, etc.) |
-| `posterUrl`   | `string` (url)  | Sí                 | URL pública de la imagen de póster                                       |
-| `isAvailable` | `boolean`       | No (default: true) | Disponibilidad en cartelera / catálogo                                   |
-| `releaseDate` | `string` (date) | No                 | Fecha de estreno oficial                                                 |
-| `reviews`     | `Array<Review>` | No (default: [])   | Reseñas y calificaciones (preparado para Fase 2)                         |
+| Campo | Tipo de Dato | Requerido | Descripción |
+| :--- | :--- | :--- | :--- |
+| `title` | `string` | Sí | Título de la película (máx. 150 chars) |
+| `synopsis` | `string` | Sí | Sinopsis argumental o resumen (10 a 2000 chars) |
+| `director` | `string` | Sí | Nombre del director o cineasta (máx. 100 chars) |
+| `year` | `number` (int) | Sí | Año de estreno (rango: 1888 a 2100) |
+| `genre` | `string` (enum) | Sí | Género (`Acción`, `Comedia`, `Drama`, `Ciencia Ficción`, `Terror`, etc.) |
+| `posterUrl` | `string` (url) | Sí | URL pública de la imagen de póster |
+| `isAvailable` | `boolean` | No (default: true) | Disponibilidad en cartelera / catálogo |
+| `releaseDate` | `string` (date) | No | Fecha de estreno oficial |
+| `reviews` | `Array<MovieReview>` | No (default: []) | Listado de reseñas y calificaciones comunitarias embebidas |
+
+### Subdocumento: `MovieReview` (Reseña Embebida)
+
+| Campo | Tipo de Dato | Descripción |
+| :--- | :--- | :--- |
+| `_id` | `ObjectId` (string) | Identificador único del subdocumento de la reseña |
+| `userId` | `string` | ID del usuario de Better Auth que redactó la reseña (inmutable, inyectado por sesión) |
+| `userName` | `string` | Nombre del autor visible al momento de publicar |
+| `rating` | `number` (int) | Calificación otorgada (rango entero de 1 a 5 estrellas) |
+| `comment` | `string` | Contenido de la opinión (3 a 500 caracteres) |
+| `createdAt` | `Date` (ISO) | Fecha de publicación |
+| `updatedAt` | `Date` (ISO) | Fecha de última edición |
 
 ---
 
 ## 🧱 Stack Tecnológico
 
 ### Backend (`/backend`)
-
 - **Runtime**: Node.js v20+ / TypeScript
 - **Framework**: Express 5
-- **Base de Datos**: MongoDB Atlas con Mongoose ODM
-- **Autenticación**: [Better Auth](https://better-auth.com) con plugin de administración (`admin`)
-- **Validación**: Zod v4 con mensajes de error explícitos y middleware genérico `validateBody`
-- **Manejo de Errores**: Códigos HTTP semánticos (200, 201, 204, 400, 401, 403, 404, 500)
+- **Base de Datos**: MongoDB Atlas con Mongoose ODM (colecciones `movies`, `user`, `session`, `account`)
+- **Autenticación**: [Better Auth](https://better-auth.com) con plugins `admin` y proveedores sociales GitHub y Google
+- **Validación**: Zod v4 con middleware genérico `validateBody` y esquemas estrictos
+- **Manejo de Errores**: Códigos HTTP canónicos (200, 201, 204, 400, 401, 403, 404, 500)
 
 ### Frontend (`/frontend`)
-
 - **Framework & Bundler**: React 19 + Vite 6 + TypeScript
-- **Gestión de Estado & Cache**: Redux Toolkit + RTK Query (`moviesApi` con invalidación de tags)
+- **Gestión de Estado & Cache**: Redux Toolkit + RTK Query (`moviesApi` con invalidación de tags `Movies` y `MyReviews`)
 - **Formularios**: React Hook Form con resolver de Zod (`@hookform/resolvers/zod`)
-- **Autenticación en Cliente**: `@better-auth/react` (`useSession`, `authClient.signIn`, `authClient.admin`)
-- **Estilos**: TailwindCSS v4 + Lucide Icons + diseño responsivo
+- **Autenticación en Cliente**: `@better-auth/react` (`useSession`, `signIn.email`, `signIn.social`, `authClient.admin`)
+- **Estilos**: TailwindCSS v4 + diseño responsivo + SVGs nativos
 
 ---
 
@@ -50,42 +64,45 @@ Aplicación web integral para la gestión y exploración de un catálogo de pel�
 
 El script de inicialización (`npm run seed`) crea dos cuentas predeterminadas y 6 películas de prueba:
 
-| Rol                  | Correo Electrónico | Contraseña  | Permisos                                                                                                                                                          |
-| :------------------- | :----------------- | :---------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Administrador**    | `admin@movies.com` | `Admin123!` | Acceso completo a `/admin` (ABM de películas) y `/admin/sesiones` (gestión de roles y revocación de sesiones). CRUD completo en la API.                           |
-| **Usuario Estándar** | `user@movies.com`  | `User123!`  | Solo lectura: navegación en catálogo, búsqueda, filtros, visualización de fichas técnicas y gestión de su propio perfil. Acceso denegado a rutas administrativas. |
+| Rol | Correo Electrónico | Contraseña | Permisos |
+| :--- | :--- | :--- | :--- |
+| **Administrador** | `admin@movies.com` | `Admin123!` | Acceso completo al panel `/admin` (ABM de películas) y `/admin/usuarios` (gestión de roles con `setRole` y revocación de sesiones). Moderación y eliminación de cualquier reseña (código 204). CRUD completo en la API. |
+| **Usuario Estándar** | `user@movies.com` | `User123!` | Exploración del catálogo, búsqueda, filtros y detalle de películas. Publicación de reseñas (máx. 1 por película). Control exclusivo de autoría sobre sus propias reseñas (edición y borrado en `/mis-reseñas`). Acceso denegado a rutas administrativas. |
 
 ---
 
 ## 📡 Endpoints de la API REST
 
-Prefijo base: `/api/v1/movies`
+Prefijos base: `/api/v1/movies` y `/api/v1/reviews`
 
-| Método   | Endpoint             | Rol Requerido | Descripción                                                                             | Códigos HTTP                                                       |
-| :------- | :------------------- | :------------ | :-------------------------------------------------------------------------------------- | :----------------------------------------------------------------- |
-| `GET`    | `/api/v1/movies`     | Público       | Lista de películas con soporte de búsqueda (`?search=`) y filtro por género (`?genre=`) | `200`                                                              |
-| `GET`    | `/api/v1/movies/:id` | Público       | Obtiene el detalle técnico completo de una película por su ID de MongoDB                | `200`, `400` (ID inválido), `404` (no encontrada)                  |
-| `POST`   | `/api/v1/movies`     | `admin`       | Crea una nueva película validada con esquema Zod                                        | `201`, `400` (error Zod), `401` (no autenticado), `403` (no admin) |
-| `PUT`    | `/api/v1/movies/:id` | `admin`       | Actualiza los datos de una película existente                                           | `200`, `400` (ID o payload inválido), `401`, `403`, `404`          |
-| `DELETE` | `/api/v1/movies/:id` | `admin`       | Elimina una película permanentemente de la base de datos                                | `204`, `400` (ID inválido), `401`, `403`, `404`                    |
+| Método | Endpoint | Rol / Acceso Requerido | Descripción | Códigos HTTP |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/movies` | Público | Lista de películas con soporte de búsqueda (`?search=`) y filtro por género (`?genre=`) | `200` |
+| `GET` | `/api/v1/movies/:id` | Público | Detalle técnico de una película con su listado de reseñas embebidas | `200`, `400`, `404` |
+| `POST` | `/api/v1/movies` | `admin` | Crea una nueva película validada con esquema Zod | `201`, `400`, `401`, `403` |
+| `PUT` | `/api/v1/movies/:id` | `admin` | Actualiza una película existente | `200`, `400`, `401`, `403`, `404` |
+| `DELETE` | `/api/v1/movies/:id` | `admin` | Elimina una película permanentemente de la base de datos | `204`, `400`, `401`, `403`, `404` |
+| `POST` | `/api/v1/movies/:id/reviews` | Usuario autenticado | Publica una reseña (1 a 5 estrellas, 3 a 500 chars). Máximo 1 por usuario | `201`, `400` (ya opinó o Zod error), `401`, `404` |
+| `PUT` | `/api/v1/movies/:id/reviews/:reviewId` | **Solo Autor** | Modifica calificación o comentario. Terceros reciben 403 | `200`, `400`, `401`, `403 Forbidden`, `404` |
+| `DELETE` | `/api/v1/movies/:id/reviews/:reviewId` | **Autor O Admin** | Elimina la reseña. Terceros reciben 403 | `204`, `401`, `403 Forbidden`, `404` |
+| `GET` | `/api/v1/reviews/me` | Usuario autenticado | Retorna todas las reseñas redactadas por el usuario autenticado con datos de la película | `200`, `401` |
 
-### Rutas de Autenticación (`/api/auth/*`)
+### Matriz de Permisos y Control de Propiedad (Ownership)
 
-Gestionadas automáticamente por Better Auth:
-
-- `POST /api/auth/sign-in/email`: Inicio de sesión con correo y contraseña.
-- `POST /api/auth/sign-up/email`: Registro de nuevos usuarios con rol por defecto `user`.
-- `POST /api/auth/sign-out`: Cierre de sesión y revocación del token activo.
-- `GET /api/auth/get-session`: Consulta y persistencia de sesión activa con cookies `httpOnly`.
-- `GET /api/auth/sign-in/social`: Inicio de sesión / vinculación con GitHub OAuth.
-- `/api/auth/admin/*`: Listado de usuarios, sesiones activas, cambio de rol (`setRole`) y revocación forzada (`revokeUserSession`).
+| Operación | Anónimo | Usuario Común (`user`) | Autor de la Reseña | Administrador (`admin`) |
+| :--- | :---: | :---: | :---: | :---: |
+| **Ver reseñas y promedio** | Permitido | Permitido | Permitido | Permitido |
+| **Publicar reseña** | `401` | Permitido (1 vez/película) | `400` (si ya opinó) | Permitido (1 vez/película) |
+| **Editar reseña** | `401` | `403 Forbidden` | **Permitido** | `403 Forbidden` (salvo si es propia) |
+| **Eliminar reseña** | `401` | `403 Forbidden` | **Permitido** | **Permitido** (moderación) |
+| **Ver "Mis Reseñas"** | `401` | Permitido | Permitido | Permitido |
+| **Cambiar roles (`setRole`)** | `401` | `403 Forbidden` | `403 Forbidden` | **Permitido** (`/admin/usuarios`) |
 
 ---
 
 ## 🚀 Instalación y Ejecución Local
 
 ### 1. Clonar el repositorio y navegar a la carpeta raíz
-
 ```bash
 git clone <url-del-repositorio>
 cd "TP2 - Trabajo Final Front"
@@ -94,15 +111,11 @@ cd "TP2 - Trabajo Final Front"
 ### 2. Configurar variables de entorno
 
 #### Backend (`backend/.env`):
-
 Copiar la plantilla desde `backend/.env.example`:
-
 ```bash
 cp backend/.env.example backend/.env
 ```
-
 Completar las variables requeridas en `backend/.env`:
-
 ```env
 PORT=3000
 MONGODB_URI=mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/movies_db?retryWrites=true&w=majority
@@ -113,38 +126,31 @@ BETTER_AUTH_URL=http://localhost:3000
 # Opcional para habilitar login con GitHub en local:
 GITHUB_CLIENT_ID=
 GITHUB_CLIENT_SECRET=
+
+# Opcional para habilitar login con Google en local:
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
 ```
 
-#### Frontend (`frontend/.env`):
-
-En desarrollo local, el frontend consume rutas relativas `/api/...` gracias al proxy configurado en `frontend/vite.config.ts`.
-
-```env
-# No requiere VITE_API_URL en desarrollo (usa el proxy hacia http://localhost:3000)
-```
+> **Nota sobre proveedores sociales**: Si `GOOGLE_CLIENT_ID` o `GITHUB_CLIENT_ID` se dejan vacíos en local, el servidor arranca normalmente permitiendo login y registro por email/contraseña. En cuanto se completan las variables en `.env`, los botones sociales quedan activos automáticamente.
 
 ### 3. Instalar dependencias
-
 ```bash
-# Instalar dependencias del backend
+# Backend
 npm --prefix backend install
 
-# Instalar dependencias del frontend
+# Frontend
 npm --prefix frontend install
 ```
 
 ### 4. Sembrar la base de datos (Seed inicial)
-
 Ejecutar el script idempotente que crea los usuarios de prueba y las 6 películas iniciales:
-
 ```bash
 npm --prefix backend run seed
 ```
 
 ### 5. Iniciar ambos servidores en modo desarrollo
-
 En terminales separadas:
-
 ```bash
 # Terminal 1 - Backend (escucha en http://localhost:3000)
 npm --prefix backend run dev
@@ -159,10 +165,7 @@ Abrir [http://localhost:5173](http://localhost:5173) en el navegador.
 
 ## 🌐 Guía de Despliegue en Render
 
-El despliegue está optimizado para la arquitectura desacoplada de Render recomendada por la cátedra:
-
 ### 1. Servicio Web para Backend (Web Service)
-
 1. Conectar el repositorio en Render y seleccionar **New +** > **Web Service**.
 2. **Root Directory**: `backend`
 3. **Environment**: `Node`
@@ -175,41 +178,39 @@ El despliegue está optimizado para la arquitectura desacoplada de Render recome
    - `BETTER_AUTH_SECRET`: Cadena aleatoria de 32+ caracteres
    - `BETTER_AUTH_URL`: URL pública asignada por Render al backend (ej: `https://mi-movies-backend.onrender.com`)
    - `FRONTEND_URL`: URL pública asignada por Render al frontend (ej: `https://mi-movies-frontend.onrender.com`)
-   - `GITHUB_CLIENT_ID` y `GITHUB_CLIENT_SECRET`: Credenciales de la OAuth App de GitHub (con callback `https://mi-movies-backend.onrender.com/api/auth/callback/github`)
+   - `GITHUB_CLIENT_ID` y `GITHUB_CLIENT_SECRET`: Credenciales de GitHub OAuth (callback `https://<backend>.onrender.com/api/auth/callback/github`)
+   - `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`: Credenciales de Google OAuth (callback `https://<backend>.onrender.com/api/auth/callback/google`)
 
 ### 2. Sitio Estático para Frontend (Static Site)
-
 1. Seleccionar **New +** > **Static Site**.
 2. **Root Directory**: `frontend`
 3. **Build Command**: `npm install && npm run build`
 4. **Publish Directory**: `dist`
-5. **Configuración de Rewrites & Redirects** (en la pestaña _Redirects/Rewrites_ de Render):
+5. **Configuración de Rewrites & Redirects** (en la pestaña *Redirects/Rewrites* de Render):
    - **Regla 1 (Proxy de API)**:
      - **Source**: `/api/*`
-     - **Destination**: `https://mi-movies-backend.onrender.com/api/*`
+     - **Destination**: `https://<tu-backend-service>.onrender.com/api/*`
      - **Action**: `Rewrite`
    - **Regla 2 (SPA Fallback)**:
      - **Source**: `/*`
      - **Destination**: `/index.html`
      - **Action**: `Rewrite`
 
-> **Importante**: Con esta configuración de rewrites, el frontend en producción sigue consumiendo `/api/v1/movies` y `/api/auth/...` de forma relativa. Esto elimina problemas de CORS y centraliza el manejo de cookies de sesión sin hardcodear URLs absolutas en el código.
-
 ---
 
 ## 🧪 Verificación y Scripts Disponibles
 
-| Comando         | Directorio  | Descripción                                                      |
-| :-------------- | :---------- | :--------------------------------------------------------------- |
-| `npm run dev`   | `backend/`  | Inicia el backend con recarga en caliente (`tsx watch`)          |
-| `npm run build` | `backend/`  | Compila TypeScript a JavaScript en `backend/dist`                |
-| `npm run seed`  | `backend/`  | Puebla MongoDB con cuentas y catálogo inicial                    |
-| `npm run dev`   | `frontend/` | Inicia Vite en modo desarrollo con proxy `/api`                  |
+| Comando | Directorio | Descripción |
+| :--- | :--- | :--- |
+| `npm run dev` | `backend/` | Inicia el backend con recarga en caliente (`tsx watch`) |
+| `npm run build` | `backend/` | Compila TypeScript a JavaScript en `backend/dist` |
+| `npm run seed` | `backend/` | Puebla MongoDB con cuentas y catálogo inicial |
+| `npm run dev` | `frontend/` | Inicia Vite en modo desarrollo con proxy `/api` |
 | `npm run build` | `frontend/` | Compila TypeScript y genera bundle optimizado en `frontend/dist` |
-| `npx oxlint`    | `frontend/` | Análisis estático y linter ultra-rápido de código React/TS       |
+| `npx oxlint` | `frontend/` | Análisis estático y linter ultra-rápido de código React/TS |
 
 ---
 
 ## 👥 Autores
-
-- Proyecto desarrollado para la materia **Metodologías de Desarrollo Web** — Universidad Tecnológica Nacional.
+- Tomas Bearzotti
+- Proyecto desarrollado para la materia **Metodologías de Desarrollo Web** — UAI.

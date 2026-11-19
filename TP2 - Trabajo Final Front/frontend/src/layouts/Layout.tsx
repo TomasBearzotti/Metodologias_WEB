@@ -66,14 +66,14 @@ export const Layout = () => {
                   Admin
                 </NavLink>
                 <NavLink
-                  to="/admin/sesiones"
+                  to="/admin/usuarios"
                   className={({ isActive }) =>
                     `transition hover:text-indigo-400 ${
                       isActive ? "text-indigo-400 font-semibold" : "text-slate-300"
                     }`
                   }
                 >
-                  Sesiones
+                  Usuarios y Roles
                 </NavLink>
               </>
             )}

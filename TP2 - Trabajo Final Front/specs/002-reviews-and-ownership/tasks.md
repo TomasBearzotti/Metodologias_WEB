@@ -96,8 +96,8 @@ description: "Task list for Reviews, Ownership & Google Auth (Fase 2) implementa
 
 **Prueba Independiente**: Entrar a `/admin`, conmutar entre pestaña "Películas" y "Usuarios y Roles", cambiar el rol de un usuario con `authClient.admin.setRole` y verificar advertencia ante auto-degradación.
 
-- [ ] T024 [P] [US4] Integrar barra de pestañas ("Películas" vs "Usuarios y Roles") en `frontend/src/pages/Admin.tsx` para permitir navegación fluida hacia la gestión de usuarios
-- [ ] T025 [US4] Asegurar montaje de `/admin/usuarios` en `frontend/src/router/index.tsx` protegido con `roles={["admin"]}`, unificando el control de roles y sesiones
+- [X] T024 [P] [US4] Integrar barra de pestañas ("Películas" vs "Usuarios y Roles") en `frontend/src/pages/Admin.tsx` para permitir navegación fluida hacia la gestión de usuarios
+- [X] T025 [US4] Asegurar montaje de `/admin/usuarios` en `frontend/src/router/index.tsx` protegido con `roles={["admin"]}`, unificando el control de roles y sesiones
 
 **Checkpoint**: Panel administrativo organizado y navegación fluida entre recursos.
 
@@ -107,10 +107,10 @@ description: "Task list for Reviews, Ownership & Google Auth (Fase 2) implementa
 
 **Propósito**: Compilación limpia, linting sin advertencias, documentación de entrega y verificación integral.
 
-- [ ] T026 [P] Ejecutar compilación estricta de TypeScript en backend (`npm run build` en `backend/`) y frontend (`npm run build` en `frontend/`) verificando 0 errores de tipado
-- [ ] T027 [P] Ejecutar linter en frontend (`npx oxlint` en `frontend/`) asegurando 0 errores y 0 advertencias
-- [ ] T028 [P] Actualizar `README.md` documentando los nuevos endpoints de reseñas (`/api/v1/movies/:id/reviews` y `/api/v1/reviews/me`), la matriz de permisos de autoría (Ownership), configuración de Google OAuth y guía de navegación en el panel de administración
-- [ ] T029 Ejecutar validación end-to-end siguiendo los 6 escenarios descritos en `specs/002-reviews-and-ownership/quickstart.md`
+- [X] T026 [P] Ejecutar compilación estricta de TypeScript en backend (`npm run build` en `backend/`) y frontend (`npm run build` en `frontend/`) verificando 0 errores de tipado
+- [X] T027 [P] Ejecutar linter en frontend (`npx oxlint` en `frontend/`) asegurando 0 errores y 0 advertencias
+- [X] T028 [P] Actualizar `README.md` documentando los nuevos endpoints de reseñas (`/api/v1/movies/:id/reviews` y `/api/v1/reviews/me`), la matriz de permisos de autoría (Ownership), configuración de Google OAuth y guía de navegación en el panel de administración
+- [X] T029 Ejecutar validación end-to-end siguiendo los 6 escenarios descritos en `specs/002-reviews-and-ownership/quickstart.md`
 
 ---
 

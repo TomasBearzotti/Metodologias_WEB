@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 import {
   useGetMoviesQuery,
   useCreateMovieMutation,
@@ -108,18 +108,11 @@ export const Admin = () => {
         <div>
           <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Panel de Administración</h1>
           <p className="mt-1 text-sm text-slate-500">
-            Gestión integral (ABM) del catálogo de películas y control de inventario
+            Gestión integral (ABM) del catálogo de películas y control de usuarios y roles
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <Link
-            to="/admin/sesiones"
-            className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition"
-          >
-            Usuarios y Sesiones
-          </Link>
-
           {!showForm && (
             <button
               type="button"
@@ -130,6 +123,35 @@ export const Admin = () => {
             </button>
           )}
         </div>
+      </div>
+
+      {/* Pestañas de Navegación del Panel de Administración */}
+      <div className="flex border-b border-slate-200 gap-2">
+        <NavLink
+          to="/admin"
+          end
+          className={({ isActive }) =>
+            `px-5 py-2.5 text-sm font-semibold border-b-2 transition -mb-px flex items-center gap-2 ${
+              isActive
+                ? "border-indigo-600 text-indigo-600 bg-indigo-50/50 rounded-t-xl"
+                : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
+            }`
+          }
+        >
+          <span>🎬</span> Catálogo de Películas
+        </NavLink>
+        <NavLink
+          to="/admin/usuarios"
+          className={({ isActive }) =>
+            `px-5 py-2.5 text-sm font-semibold border-b-2 transition -mb-px flex items-center gap-2 ${
+              isActive
+                ? "border-indigo-600 text-indigo-600 bg-indigo-50/50 rounded-t-xl"
+                : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
+            }`
+          }
+        >
+          <span>👥</span> Usuarios y Roles
+        </NavLink>
       </div>
 
       {/* Banner de Feedback */}

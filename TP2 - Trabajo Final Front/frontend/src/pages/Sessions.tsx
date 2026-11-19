@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { NavLink } from "react-router";
 import { authClient, useSession } from "../lib/auth-client";
 
 type AdminUser = { id: string; name: string; email: string; role?: string | null };
@@ -107,7 +107,7 @@ export const Sessions = () => {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-5">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-            Gestión de Usuarios y Sesiones
+            Gestión de Usuarios y Roles
           </h1>
           <p className="mt-1 text-sm text-slate-500">
             Auditoría de cuentas registradas, asignación de roles y control de sesiones activas en MongoDB
@@ -115,12 +115,6 @@ export const Sessions = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            to="/admin"
-            className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition"
-          >
-            ← Volver a Películas
-          </Link>
           <button
             type="button"
             onClick={fetchUsers}
@@ -130,6 +124,35 @@ export const Sessions = () => {
             {loadingUsers ? "Cargando..." : "Actualizar"}
           </button>
         </div>
+      </div>
+
+      {/* Pestañas de Navegación del Panel de Administración */}
+      <div className="flex border-b border-slate-200 gap-2">
+        <NavLink
+          to="/admin"
+          end
+          className={({ isActive }) =>
+            `px-5 py-2.5 text-sm font-semibold border-b-2 transition -mb-px flex items-center gap-2 ${
+              isActive
+                ? "border-indigo-600 text-indigo-600 bg-indigo-50/50 rounded-t-xl"
+                : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
+            }`
+          }
+        >
+          <span>🎬</span> Catálogo de Películas
+        </NavLink>
+        <NavLink
+          to="/admin/usuarios"
+          className={({ isActive }) =>
+            `px-5 py-2.5 text-sm font-semibold border-b-2 transition -mb-px flex items-center gap-2 ${
+              isActive
+                ? "border-indigo-600 text-indigo-600 bg-indigo-50/50 rounded-t-xl"
+                : "border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300"
+            }`
+          }
+        >
+          <span>👥</span> Usuarios y Roles
+        </NavLink>
       </div>
 
       {/* Banner de Feedback */}
