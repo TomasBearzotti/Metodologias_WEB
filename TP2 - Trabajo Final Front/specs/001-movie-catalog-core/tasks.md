@@ -69,10 +69,10 @@ description: "Task list for Movie Catalog Core (Fase 1) implementation"
 
 **Prueba Independiente**: Registrar un nuevo usuario, iniciar sesión con credenciales y con GitHub, verificar que la sesión persiste tras presionar F5, inspeccionar la información de perfil y ejecutar logout.
 
-- [ ] T019 [US2] Adaptar la vista de inicio de sesión en `frontend/src/pages/Login.tsx` para admitir autenticación por correo/contraseña y botón de inicio con GitHub OAuth, gestionando errores y redireccionando al catálogo tras el login exitoso
-- [ ] T020 [P] [US2] Adaptar la vista de registro en `frontend/src/pages/Register.tsx` utilizando React Hook Form con validaciones de email y longitud mínima de contraseña, e invocando `authClient.signUp.email` con redirección automática
-- [ ] T021 [P] [US2] Adaptar la página de perfil en `frontend/src/pages/Profile.tsx` para exhibir el nombre de usuario, email, insignia de rol (`user` o `admin`) y cuentas sociales vinculadas
-- [ ] T022 [US2] Actualizar el encabezado en `frontend/src/layouts/Layout.tsx` para reflejar el estado de autenticación dinámico mediante `useSession()`, mostrando botones de Login/Registro si no hay sesión, o nombre, badge de rol y botón de SignOut si está autenticado
+- [X] T019 [US2] Adaptar la vista de inicio de sesión en `frontend/src/pages/Login.tsx` para admitir autenticación por correo/contraseña y botón de inicio con GitHub OAuth, gestionando errores y redireccionando al catálogo tras el login exitoso
+- [X] T020 [P] [US2] Adaptar la vista de registro en `frontend/src/pages/Register.tsx` utilizando React Hook Form con validaciones de email y longitud mínima de contraseña, e invocando `authClient.signUp.email` con redirección automática
+- [X] T021 [P] [US2] Adaptar la página de perfil en `frontend/src/pages/Profile.tsx` para exhibir el nombre de usuario, email, insignia de rol (`user` o `admin`) y cuentas sociales vinculadas
+- [X] T022 [US2] Actualizar el encabezado en `frontend/src/layouts/Layout.tsx` para reflejar el estado de autenticación dinámico mediante `useSession()`, mostrando botones de Login/Registro si no hay sesión, o nombre, badge de rol y botón de SignOut si está autenticado
 
 **Checkpoint**: Autenticación y control de sesión completamente operativos e integrados al frontend.
 
