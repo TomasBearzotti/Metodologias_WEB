@@ -50,14 +50,14 @@ description: "Task list for Movie Catalog Core (Fase 1) implementation"
 
 **Prueba Independiente**: Acceder a `http://localhost:5173/`, verificar la carga de películas del catálogo, aplicar filtro de género y búsqueda por texto, y abrir una película para ver su ficha completa en `/movies/:id` sin requerir login.
 
-- [ ] T011 [P] [US1] Implementar controladores de lectura `listMovies` (con soporte para `search`, `genre`, `page`, `limit`, `sortBy`, `sortOrder` devolviendo status 200 y meta paginado) y `getMovieById` (status 200 si existe, 400 si ID no es ObjectId válido, 404 si no existe) en `backend/src/controllers/movies.controller.ts`
-- [ ] T012 [US1] Crear router de películas en `backend/src/routes/movies.routes.ts` exponiendo las rutas públicas `GET /` y `GET /:id` asociadas a sus respectivos controladores, y montarlo en `backend/src/routes/index.ts`
-- [ ] T013 [P] [US1] Implementar `moviesApi` en `frontend/src/store/api.ts` definiendo los endpoints de consulta `getMovies` (`GET /movies` con params) y `getMovieById` (`GET /movies/:id`) con tag `Movies`
-- [ ] T014 [US1] Registrar el reducer y middleware de `moviesApi` en `frontend/src/store/index.ts` reemplazando la referencia legada de `studentsApi`
-- [ ] T015 [P] [US1] Crear componente de tarjeta visual `MovieCard.tsx` en `frontend/src/components/MovieCard.tsx` mostrando póster con fallback de imagen rota, título, año de estreno, género y enlace al detalle
-- [ ] T016 [US1] Implementar página principal de catálogo en `frontend/src/pages/Home.tsx` con barra de búsqueda por texto, selector de género y cuadrícula de componentes `MovieCard` con estados de carga y lista vacía
-- [ ] T017 [P] [US1] Implementar vista de detalle de película en `frontend/src/pages/MovieDetail.tsx` consumiendo `useGetMovieByIdQuery`, mostrando póster ampliado, título, sinopsis completa, director, año, género, disponibilidad y botón para volver al catálogo
-- [ ] T018 [US1] Configurar rutas públicas `/` y `/movies/:id` en `frontend/src/router/index.tsx` y actualizar identidad visual y enlaces de navegación en `frontend/src/layouts/Layout.tsx`
+- [x] T011 [P] [US1] Implementar controladores de lectura `listMovies` (con soporte para `search`, `genre`, `page`, `limit`, `sortBy`, `sortOrder` devolviendo status 200 y meta paginado) y `getMovieById` (status 200 si existe, 400 si ID no es ObjectId válido, 404 si no existe) en `backend/src/controllers/movies.controller.ts`
+- [x] T012 [US1] Crear router de películas en `backend/src/routes/movies.routes.ts` exponiendo las rutas públicas `GET /` y `GET /:id` asociadas a sus respectivos controladores, y montarlo en `backend/src/routes/index.ts`
+- [x] T013 [P] [US1] Implementar `moviesApi` en `frontend/src/store/api.ts` definiendo los endpoints de consulta `getMovies` (`GET /movies` con params) y `getMovieById` (`GET /movies/:id`) con tag `Movies`
+- [x] T014 [US1] Registrar el reducer y middleware de `moviesApi` en `frontend/src/store/index.ts` reemplazando la referencia legada de `studentsApi`
+- [x] T015 [P] [US1] Crear componente de tarjeta visual `MovieCard.tsx` en `frontend/src/components/MovieCard.tsx` mostrando póster con fallback de imagen rota, título, año de estreno, género y enlace al detalle
+- [x] T016 [US1] Implementar página principal de catálogo en `frontend/src/pages/Home.tsx` con barra de búsqueda por texto, selector de género y cuadrícula de componentes `MovieCard` con estados de carga y lista vacía
+- [x] T017 [P] [US1] Implementar vista de detalle de película en `frontend/src/pages/MovieDetail.tsx` consumiendo `useGetMovieByIdQuery`, mostrando póster ampliado, título, sinopsis completa, director, año, género, disponibilidad y botón para volver al catálogo
+- [x] T018 [US1] Configurar rutas públicas `/` y `/movies/:id` en `frontend/src/router/index.tsx` y actualizar identidad visual y enlaces de navegación en `frontend/src/layouts/Layout.tsx`
 
 **Checkpoint**: MVP operativo. El catálogo público y la vista de detalle funcionan de forma autónoma.
 

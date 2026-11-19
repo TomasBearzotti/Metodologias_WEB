@@ -1,9 +1,8 @@
-// Arbol de rutas centralizado (data router). Tres niveles de acceso: publico, privado y privado por perfil.
-import { createBrowserRouter, redirect } from "react-router";
+import { createBrowserRouter } from "react-router";
 import { Layout } from "../layouts/Layout";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { Home } from "../pages/Home";
-import { StudentDetail } from "../pages/StudentDetail";
+import { MovieDetail } from "../pages/MovieDetail";
 import { Login } from "../pages/Login";
 import { Register } from "../pages/Register";
 import { Profile } from "../pages/Profile";
@@ -12,7 +11,7 @@ import { Sessions } from "../pages/Sessions";
 import { NotFound } from "../pages/NotFound";
 
 export const router = createBrowserRouter([
-  // Fuera del Layout: pantalla completa, sin header
+  // Fuera del Layout: pantalla completa para login y registro
   { path: "/login", element: <Login /> },
   { path: "/register", element: <Register /> },
 
@@ -20,22 +19,21 @@ export const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      // Redireccion fija: el loader corre antes de renderizar, asi el Layout no llega a montarse
-      { index: true, loader: () => redirect("/login") },
-
-      // Publicas
+      // Catálogo público
+      { index: true, element: <Home /> },
       { path: "home", element: <Home /> },
-      { path: "students/:id", element: <StudentDetail /> },
+      { path: "movies/:id", element: <MovieDetail /> },
 
+      // Rutas privadas para cualquier usuario autenticado
       {
         element: <ProtectedRoute />,
         children: [{ path: "perfil", element: <Profile /> }],
       },
 
+      // Rutas exclusivas para rol admin
       {
         element: <ProtectedRoute roles={["admin"]} redirectTo="/perfil" />,
         children: [
-          // Ruta sin element: solo agrupa por URL (/admin, /admin/sesiones) y renderiza a la hija directo
           {
             path: "admin",
             children: [

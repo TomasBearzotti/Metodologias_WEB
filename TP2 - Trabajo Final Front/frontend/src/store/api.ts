@@ -1,13 +1,9 @@
-// RTK Query: estado del SERVIDOR (estudiantes). Reemplaza a services/students.ts + los useEffect/useState
-// de cada pagina (ver clase 11/sin-redux). Cada endpoint genera un hook con cache incluida.
 import { createApi, type BaseQueryFn } from "@reduxjs/toolkit/query/react";
 import type { AxiosRequestConfig } from "axios";
 import { api as http, getErrorMessage } from "../lib/api";
-import type { StudentFormValues } from "../schemas/student.schema";
-import type { Paginated, Student } from "../types/student";
+import type { Movie, MovieFilters, Paginated } from "../types/movie";
+import type { MovieFormValues } from "../schemas/movie.schema";
 
-// Usa la misma instancia de axios: mantiene withCredentials y el interceptor 401 de main.tsx.
-// El error se guarda ya como string, listo para mostrar.
 const axiosBaseQuery: BaseQueryFn<AxiosRequestConfig, unknown, string> = async (config) => {
   try {
     const { data } = await http.request(config);
@@ -17,42 +13,42 @@ const axiosBaseQuery: BaseQueryFn<AxiosRequestConfig, unknown, string> = async (
   }
 };
 
-export const studentsApi = createApi({
-  reducerPath: "studentsApi",
+export const moviesApi = createApi({
+  reducerPath: "moviesApi",
   baseQuery: axiosBaseQuery,
-  // Las queries "proveen" el tag y las mutations lo "invalidan" -> RTK Query vuelve a pedir solo.
-  tagTypes: ["Students"],
+  tagTypes: ["Movies"],
   endpoints: (build) => ({
-    // El listado usa el metodo QUERY (filtros en el body).
-    getStudents: build.query<Student[], void>({
-      query: () => ({ url: "/students", method: "QUERY", data: { sortBy: "lastName", sortOrder: "asc" } }),
-      transformResponse: (response: Paginated<Student>) => response.data,
-      providesTags: ["Students"],
+    getMovies: build.query<Paginated<Movie>, MovieFilters | void>({
+      query: (params) => ({
+        url: "/movies",
+        method: "GET",
+        params: params || undefined,
+      }),
+      providesTags: ["Movies"],
     }),
-    // GET /students/:id devuelve el estudiante sin envelope (400 si el id es invalido, 404 si no existe).
-    getStudentById: build.query<Student, string>({
-      query: (id) => ({ url: `/students/${id}` }),
-      providesTags: ["Students"],
+    getMovieById: build.query<Movie, string>({
+      query: (id) => ({ url: `/movies/${id}`, method: "GET" }),
+      providesTags: ["Movies"],
     }),
-    createStudent: build.mutation<Student, StudentFormValues>({
-      query: (data) => ({ url: "/students", method: "POST", data }),
-      invalidatesTags: ["Students"],
+    createMovie: build.mutation<Movie, MovieFormValues>({
+      query: (data) => ({ url: "/movies", method: "POST", data }),
+      invalidatesTags: ["Movies"],
     }),
-    updateStudent: build.mutation<Student, { id: string; values: StudentFormValues }>({
-      query: ({ id, values }) => ({ url: `/students/${id}`, method: "PUT", data: values }),
-      invalidatesTags: ["Students"],
+    updateMovie: build.mutation<Movie, { id: string; values: Partial<MovieFormValues> }>({
+      query: ({ id, values }) => ({ url: `/movies/${id}`, method: "PUT", data: values }),
+      invalidatesTags: ["Movies"],
     }),
-    deleteStudent: build.mutation<void, string>({
-      query: (id) => ({ url: `/students/${id}`, method: "DELETE" }),
-      invalidatesTags: ["Students"],
+    deleteMovie: build.mutation<void, string>({
+      query: (id) => ({ url: `/movies/${id}`, method: "DELETE" }),
+      invalidatesTags: ["Movies"],
     }),
   }),
 });
 
 export const {
-  useGetStudentsQuery,
-  useGetStudentByIdQuery,
-  useCreateStudentMutation,
-  useUpdateStudentMutation,
-  useDeleteStudentMutation,
-} = studentsApi;
+  useGetMoviesQuery,
+  useGetMovieByIdQuery,
+  useCreateMovieMutation,
+  useUpdateMovieMutation,
+  useDeleteMovieMutation,
+} = moviesApi;
