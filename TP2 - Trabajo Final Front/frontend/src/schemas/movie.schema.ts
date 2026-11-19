@@ -31,7 +31,7 @@ export const movieFormSchema = z.object({
     .trim()
     .min(2, "El nombre del director debe tener al menos 2 caracteres")
     .max(100, "Máximo 100 caracteres"),
-  year: z.coerce
+  year: z
     .number()
     .int("Debe ser un número entero")
     .min(1888, "El año no puede ser anterior a 1888")
@@ -44,8 +44,8 @@ export const movieFormSchema = z.object({
     .string()
     .trim()
     .url("Debe ser una URL válida"),
-  isAvailable: z.boolean().default(true),
-  releaseDate: z.string().default(() => new Date().toISOString().split("T")[0]),
+  isAvailable: z.boolean(),
+  releaseDate: z.string().min(1, "La fecha de lanzamiento es obligatoria"),
 });
 
 export type MovieFormValues = z.infer<typeof movieFormSchema>;

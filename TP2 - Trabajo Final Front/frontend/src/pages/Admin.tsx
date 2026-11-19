@@ -1,26 +1,285 @@
+import { useState, useRef } from "react";
 import { Link } from "react-router";
+import {
+  useGetMoviesQuery,
+  useCreateMovieMutation,
+  useUpdateMovieMutation,
+  useDeleteMovieMutation,
+} from "../store/api";
+import { MovieForm } from "../components/admin/MovieForm";
+import type { Movie } from "../types/movie";
+import type { MovieFormValues } from "../schemas/movie.schema";
+import { getErrorMessage } from "../lib/api";
+
+const THUMBNAIL_PLACEHOLDER =
+  "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=100&q=80";
 
 export const Admin = () => {
+  const { data: response, isLoading, error: loadError } = useGetMoviesQuery({ limit: 100 });
+  const movies = response?.data ?? [];
+
+  const [createMovie] = useCreateMovieMutation();
+  const [updateMovie] = useUpdateMovieMutation();
+  const [deleteMovie] = useDeleteMovieMutation();
+
+  const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  const formRef = useRef<HTMLDivElement>(null);
+
+  const scrollToForm = () => {
+    setShowForm(true);
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
+  const handleStartCreate = () => {
+    setEditingMovie(null);
+    scrollToForm();
+  };
+
+  const handleStartEdit = (movie: Movie) => {
+    setEditingMovie(movie);
+    scrollToForm();
+  };
+
+  const handleCancelForm = () => {
+    setEditingMovie(null);
+    setShowForm(false);
+  };
+
+  const handleSave = async (values: MovieFormValues) => {
+    setFeedback(null);
+    try {
+      if (editingMovie) {
+        await updateMovie({ id: editingMovie._id, values }).unwrap();
+        setFeedback({
+          type: "success",
+          message: `La película "${values.title}" fue actualizada exitosamente.`,
+        });
+      } else {
+        await createMovie(values).unwrap();
+        setFeedback({
+          type: "success",
+          message: `La película "${values.title}" fue agregada exitosamente al catálogo.`,
+        });
+      }
+      setEditingMovie(null);
+      setShowForm(false);
+    } catch (err: unknown) {
+      setFeedback({
+        type: "error",
+        message: getErrorMessage(err) || "No se pudo guardar la película",
+      });
+      throw err;
+    }
+  };
+
+  const handleDelete = async (movie: Movie) => {
+    setFeedback(null);
+    if (!window.confirm(`¿Estás seguro de que deseás eliminar "${movie.title}" del catálogo?`)) {
+      return;
+    }
+
+    try {
+      await deleteMovie(movie._id).unwrap();
+      setFeedback({
+        type: "success",
+        message: `La película "${movie.title}" fue eliminada del catálogo.`,
+      });
+      if (editingMovie?._id === movie._id) {
+        setEditingMovie(null);
+        setShowForm(false);
+      }
+    } catch (err: unknown) {
+      setFeedback({
+        type: "error",
+        message: getErrorMessage(err) || "No se pudo eliminar la película",
+      });
+    }
+  };
+
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-      <h1 className="text-2xl font-bold text-slate-900">Panel de Administración</h1>
-      <p className="mt-2 text-sm text-slate-600">
-        Bienvenido al panel de administración.
-      </p>
-      <div className="mt-6 flex gap-3">
-        <Link
-          to="/admin/sesiones"
-          className="inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition"
-        >
-          Gestionar Sesiones y Usuarios →
-        </Link>
-        <Link
-          to="/"
-          className="inline-flex items-center rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
-        >
-          Ver Catálogo Público
-        </Link>
+    <div className="space-y-8">
+      {/* Encabezado y Acciones */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-5">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Panel de Administración</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Gestión integral (ABM) del catálogo de películas y control de inventario
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            to="/admin/sesiones"
+            className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition"
+          >
+            Usuarios y Sesiones
+          </Link>
+
+          {!showForm && (
+            <button
+              type="button"
+              onClick={handleStartCreate}
+              className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-700 transition flex items-center gap-2"
+            >
+              <span>+</span> Nueva Película
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Banner de Feedback */}
+      {feedback && (
+        <div
+          role="alert"
+          className={`rounded-xl border p-4 text-sm font-medium flex items-center justify-between ${
+            feedback.type === "success"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+              : "border-red-200 bg-red-50 text-red-800"
+          }`}
+        >
+          <span>{feedback.message}</span>
+          <button
+            type="button"
+            onClick={() => setFeedback(null)}
+            className="text-xs font-bold hover:underline"
+          >
+            ✕ Cerrar
+          </button>
+        </div>
+      )}
+
+      {/* Formulario (Creación o Edición) */}
+      {showForm && (
+        <div ref={formRef}>
+          <MovieForm
+            movie={editingMovie}
+            onSave={handleSave}
+            onCancel={handleCancelForm}
+          />
+        </div>
+      )}
+
+      {/* Listado / Tabla de Gestión */}
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-100 bg-slate-50/70 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-base font-bold text-slate-900">
+            Películas Registradas ({movies.length})
+          </h2>
+          {showForm && (
+            <button
+              type="button"
+              onClick={handleCancelForm}
+              className="text-xs font-semibold text-slate-500 hover:text-slate-800"
+            >
+              Cerrar formulario
+            </button>
+          )}
+        </div>
+
+        {isLoading && (
+          <div className="p-8 text-center text-sm text-slate-500">
+            Cargando inventario de películas...
+          </div>
+        )}
+
+        {loadError && (
+          <div className="p-6 text-center text-sm text-red-600">
+            {getErrorMessage(loadError)}
+          </div>
+        )}
+
+        {!isLoading && !loadError && movies.length === 0 && (
+          <div className="p-12 text-center text-sm text-slate-500">
+            No hay películas registradas en el catálogo. Podés agregar la primera con el botón "+ Nueva Película".
+          </div>
+        )}
+
+        {!isLoading && !loadError && movies.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm text-slate-600">
+              <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <tr>
+                  <th scope="col" className="px-6 py-3">Póster</th>
+                  <th scope="col" className="px-6 py-3">Título / Director</th>
+                  <th scope="col" className="px-6 py-3">Género / Año</th>
+                  <th scope="col" className="px-6 py-3">Disponibilidad</th>
+                  <th scope="col" className="px-6 py-3 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {movies.map((movie) => (
+                  <tr key={movie._id} className="hover:bg-slate-50/80 transition">
+                    <td className="px-6 py-3">
+                      <img
+                        src={movie.posterUrl || THUMBNAIL_PLACEHOLDER}
+                        alt={movie.title}
+                        className="h-14 w-10 rounded object-cover shadow-sm bg-slate-100"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = THUMBNAIL_PLACEHOLDER;
+                        }}
+                      />
+                    </td>
+                    <td className="px-6 py-3">
+                      <Link
+                        to={`/movies/${movie._id}`}
+                        className="font-bold text-slate-900 hover:text-indigo-600 transition"
+                      >
+                        {movie.title}
+                      </Link>
+                      <span className="block text-xs text-slate-500">{movie.director}</span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span className="inline-block rounded-md bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                        {movie.genre}
+                      </span>
+                      <span className="block text-xs text-slate-500 mt-0.5">{movie.year}</span>
+                    </td>
+                    <td className="px-6 py-3">
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          movie.isAvailable
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-red-50 text-red-700 border border-red-200"
+                        }`}
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full ${
+                            movie.isAvailable ? "bg-emerald-500" : "bg-red-500"
+                          }`}
+                        />
+                        {movie.isAvailable ? "Disponible" : "No disponible"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-3 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleStartEdit(movie)}
+                          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(movie)}
+                          className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 transition"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </div>
   );
 };
