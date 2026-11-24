@@ -1,12 +1,43 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Título y SEO -->
+    <title>CineCatalog</title>
+    <meta
+      name="description"
+      content="Plataforma de exploración y gestión cinematográfica: explorá el catálogo, compartí tus reseñas y administrá películas."
+    />
+    <meta
+      name="keywords"
+      content="películas, cine, catálogo, reseñas, calificaciones, cinecatalog"
+    />
+    <meta name="author" content="CineCatalog" />
+
+    <!-- Color de la barra del navegador (coincide con el tema slate-900) -->
+    <meta name="theme-color" content="#0f172a" />
+
+    <!-- Open Graph / Redes Sociales -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="CineCatalog" />
+    <meta
+      property="og:description"
+      content="Explorá películas, compartí tus opiniones y gestioná tu colección cinematográfica favorita."
+    />
+    <meta property="og:image" content="/favicon.svg" />
+
+    <!-- Tipografía Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
   </head>
-  <body>
+  <body class="bg-slate-50 text-slate-800 antialiased selection:bg-indigo-500 selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

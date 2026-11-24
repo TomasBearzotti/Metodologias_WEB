@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { connectMongoDB, disconnectMongoDB } from "../config/db.js";
 import { auth } from "../lib/auth.js";
 import Movie from "../models/Movie.js";
+import { EXTRA_MOVIES } from "./movies-dataset.js";
 
 interface SeedUser {
   email: string;
@@ -137,14 +138,25 @@ async function seed(): Promise<void> {
     }
   }
 
-  const movieCount = await Movie.countDocuments();
-  if (movieCount === 0) {
-    console.log("🎬 [seed] Insertando 6 películas iniciales...");
-    await Movie.insertMany(SEED_MOVIES);
-    console.log("✅ [seed] Películas insertadas exitosamente.");
-  } else {
-    console.log(`ℹ️ [seed] Ya existen ${movieCount} películas en la base de datos.`);
+  const ALL_MOVIES = [...SEED_MOVIES, ...EXTRA_MOVIES];
+  console.log(`🎬 [seed] Verificando catálogo de ${ALL_MOVIES.length} películas...`);
+
+  let addedCount = 0;
+  for (const movie of ALL_MOVIES) {
+    const exists = await Movie.findOne({ title: movie.title });
+    if (!exists) {
+      await Movie.create(movie);
+      addedCount++;
+    }
   }
+
+  const totalCount = await Movie.countDocuments();
+  if (addedCount > 0) {
+    console.log(`✅ [seed] Se insertaron ${addedCount} películas nuevas.`);
+  } else {
+    console.log(`ℹ️ [seed] Todas las películas del catálogo ya estaban presentes.`);
+  }
+  console.log(`📊 [seed] Total de películas en la base de datos: ${totalCount}`);
 
   console.log("✨ [seed] Proceso de inicialización finalizado.");
   await disconnectMongoDB();

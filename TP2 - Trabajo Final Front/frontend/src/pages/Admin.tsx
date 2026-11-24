@@ -15,8 +15,25 @@ const THUMBNAIL_PLACEHOLDER =
   "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=100&q=80";
 
 export const Admin = () => {
-  const { data: response, isLoading, error: loadError } = useGetMoviesQuery({ limit: 100 });
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState("");
+
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+    error: loadError,
+  } = useGetMoviesQuery({
+    page,
+    limit,
+    search: search.trim() || undefined,
+  });
+
   const movies = response?.data ?? [];
+  const meta = response?.meta;
+  const total = meta?.total ?? movies.length;
+  const totalPages = meta?.totalPages ?? 1;
 
   const [createMovie] = useCreateMovieMutation();
   const [updateMovie] = useUpdateMovieMutation();
@@ -27,12 +44,48 @@ export const Admin = () => {
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
   const formRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const scrollToForm = () => {
     setShowForm(true);
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages || newPage === page) return;
+    setPage(newPage);
+    tableRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1);
+  };
+
+  const handleSearchChange = (newSearch: string) => {
+    setSearch(newSearch);
+    setPage(1);
+  };
+
+  const startItem = total === 0 ? 0 : (page - 1) * limit + 1;
+  const endItem = Math.min(page * limit, total);
+
+  const getPageNumbers = (): (number | "...")[] => {
+    const pages: (number | "...")[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (page > 3) pages.push("...");
+      const start = Math.max(2, page - 1);
+      const end = Math.min(totalPages - 1, page + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (page < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
   };
 
   const handleStartCreate = () => {
@@ -187,20 +240,68 @@ export const Admin = () => {
       )}
 
       {/* Listado / Tabla de Gestión */}
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-100 bg-slate-50/70 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-base font-bold text-slate-900">
-            Películas Registradas ({movies.length})
-          </h2>
-          {showForm && (
-            <button
-              type="button"
-              onClick={handleCancelForm}
-              className="text-xs font-semibold text-slate-500 hover:text-slate-800"
-            >
-              Cerrar formulario
-            </button>
-          )}
+      <section ref={tableRef} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-100 bg-slate-50/70 p-4 sm:px-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h2 className="text-base font-bold text-slate-900">
+              Películas en Inventario ({total})
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {isLoading ? (
+                "Consultando catálogo..."
+              ) : (
+                <>Mostrando {startItem} - {endItem} de {total} películas</>
+              )}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Buscador dentro del Admin */}
+            <div className="relative">
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Filtrar por título..."
+                className="w-44 sm:w-56 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => handleSearchChange("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 hover:text-slate-700"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Selector de límite por página */}
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
+              <label htmlFor="admin-limit">Mostrar:</label>
+              <select
+                id="admin-limit"
+                value={limit}
+                onChange={(e) => handleLimitChange(Number(e.target.value))}
+                className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-700 focus:border-indigo-500 focus:outline-none"
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+
+            {showForm && (
+              <button
+                type="button"
+                onClick={handleCancelForm}
+                className="text-xs font-semibold text-slate-500 hover:text-slate-800"
+              >
+                Cerrar formulario
+              </button>
+            )}
+          </div>
         </div>
 
         {isLoading && (
@@ -299,6 +400,60 @@ export const Admin = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* Paginación del Administrador */}
+        {!isLoading && !loadError && totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100 bg-slate-50/50 px-6 py-3.5 text-xs">
+            <span className="text-slate-500">
+              Página <span className="font-bold text-slate-900">{page}</span> de{" "}
+              <span className="font-bold text-slate-900">{totalPages}</span> ({total} películas)
+            </span>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                disabled={page <= 1 || isFetching}
+                onClick={() => handlePageChange(page - 1)}
+                className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+              >
+                ← Anterior
+              </button>
+
+              <div className="flex items-center gap-1">
+                {getPageNumbers().map((p, idx) =>
+                  p === "..." ? (
+                    <span key={`admin-ellipsis-${idx}`} className="px-1 text-slate-400">
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={p}
+                      type="button"
+                      disabled={isFetching}
+                      onClick={() => handlePageChange(p)}
+                      className={`h-7 w-7 rounded-lg font-semibold transition ${
+                        p === page
+                          ? "bg-indigo-600 text-white"
+                          : "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  )
+                )}
+              </div>
+
+              <button
+                type="button"
+                disabled={page >= totalPages || isFetching}
+                onClick={() => handlePageChange(page + 1)}
+                className="rounded-lg border border-slate-300 bg-white px-2.5 py-1 font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+              >
+                Siguiente →
+              </button>
+            </div>
           </div>
         )}
       </section>
